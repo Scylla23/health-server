@@ -1,4 +1,4 @@
-name: Deploy to aws
+name: Deploy to AWS
 
 on:
   workflow_run:
@@ -10,14 +10,29 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to EC2
+      # Step 1: Check out the repository to get the docker-compose.yml file
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Copy the docker-compose.prod.yml file to the server
+      - name: Copy docker-compose.yml
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: "ec2-user"
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "."
+
+      # Step 3: SSH into the server to create the .env and run docker-compose
+      - name: Deploy application
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: "ec2-user"
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "${{ secrets.DOCKER_ENV_FILE }}" > .env
             docker pull scylla23/health-server:latest
-            docker stop health-server-container || true
-            docker rm health-server-container || true
-            docker run -d -p 3000:3000 --name health-server-container scylla23/health-server:latest
+            # Use the -f flag to specify the prod file
+            docker-compose -f docker-compose.prod.yml up -d
