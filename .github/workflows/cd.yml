@@ -13,9 +13,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2HOST }}
+          host: ${{ secrets.EC2_HOST }}
           username: "ec2-user"
-          key: ${{ secrets.EC2SSH_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull scylla23/health-server:latest
             docker stop health-server-container || true
