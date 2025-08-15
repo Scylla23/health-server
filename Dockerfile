@@ -27,11 +27,18 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Copy source code
-COPY --from=build /app .
+# COPY --from=build /app .
+
+# Optmize further
+# Copy the built application from the build stage
+COPY --from=build /app/dist ./dist
+
+# Optionally copy other needed files (like configs)
+# COPY --from=build /app/package*.json ./
 
 #Expost port
 EXPOSE 3000
 
-CMD [ "npm" "start" ]
+CMD [ "npm", "start" ]
 
 
