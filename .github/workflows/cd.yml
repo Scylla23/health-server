@@ -1,0 +1,23 @@
+name: Deploy to aws
+
+on:
+  workflow_run:
+    workflows: ["Build Docker Image"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action
+        with:
+          host: ${{ secrets.EC2HOST }}
+          username: "ec2-user"
+          key: ${{ secrets.EC2SSH_KEY }}
+          script: |
+            docker pull scylla23/health-server:latest
+            docker stop health-server-container || true
+            docker rm health-server-container || true
+            docker run -d -p 3000:3000 --name health-server-container scylla23/health-server:latest
