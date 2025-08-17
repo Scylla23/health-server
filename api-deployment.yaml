@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: scylla23/health-server:latest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: postgres-config
+                key: POSTGRES_DB
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: postgres-config
+                key: POSTGRES_PORT
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: postgres-config
+                key: POSTGRES_HOST
