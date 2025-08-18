@@ -17,6 +17,20 @@ spec:
         image: scylla23/health-server:latest
         ports:
         - containerPort: 3000
+        # Readiness Probe to check if the app is ready to serve traffic
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # Liveness Probe to check if the app is still responsive
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 20
+          periodSeconds: 60
         env:
           - name: POSTGRES_USER
             valueFrom:

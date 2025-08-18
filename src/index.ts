@@ -29,7 +29,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/health", (req, res) => {
-  res.send("OK - Server is healthy");
+  res.status(200).send("OK - Server is healthy");
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK - Server is healthy and running");
+});
+
+app.get("/healthV2", (req, res) => {
+  res.send("OK - V2 Server is healthy");
 });
 
 app.listen(3000, () => {
