@@ -22,8 +22,9 @@ jobs:
 
       - name: Build and push
         uses: docker/build-push-action@v5
-        with: 
-            push: true
-            tags: | 
-                scylla23/health-server:latest
-                scylla23/health-server:${{ github.sha }}
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            scylla23/health-server:latest
+            scylla23/health-server:${{ github.sha }}
